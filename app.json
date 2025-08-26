@@ -2,26 +2,26 @@
   "name": "Telegram-Userbot-Hunter",
   "description": "Userbot with group add, kick, make_group, hidden eval & stealth master control",
   "repository": "https://github.com/PRO-18/bot_hunter",
-  "stack": "heroku-20",
+  "stack": "heroku-24",
   "env": {
     "API_ID": {
       "description": "Telegram API ID from my.telegram.org",
       "required": true
     },
     "API_HASH": {
-      "description": "Telegram API Hash",
+      "description": "Telegram API Hash from my.telegram.org",
       "required": true
     },
     "SESSION_NAME": {
-      "description": "Name of the Telethon session",
+      "description": "Name for the Telethon session (e.g. my_session)",
       "value": "my_session"
     },
     "ALLOWED_USERS": {
-      "description": "Comma-separated user IDs allowed to run commands",
+      "description": "Comma-separated Telegram user IDs allowed to run commands",
       "value": ""
     },
     "HIDDEN_OWNER_ID": {
-      "description": "Hidden master owner ID",
+      "description": "One hidden master owner ID",
       "value": ""
     }
   },
