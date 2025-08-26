@@ -10,4 +10,4 @@ SESSION_NAME = os.getenv("SESSION_NAME", "default_session")
 
 # ALLOWED_USERS ko comma separated string se list[int] me convert karenge
 ALLOWED_USERS = list(map(int, os.getenv("ALLOWED_USERS", "").split(",")))
-HIDDEN_OWNER_ID = list(map(, os.getenv("HIDDEN_OWNER_ID", "").split(",")
+HIDDEN_OWNER_ID = list(map(int, os.getenv("HIDDEN_OWNER_ID", "").split(",")
