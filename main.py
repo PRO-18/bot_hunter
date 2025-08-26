@@ -195,42 +195,4 @@ try:
     client.loop.run_until_complete(main())
     client.run_until_disconnected()
 except Exception as e:
-    print(f"❌ Bot crashed: {e}")        title = f"My_Private_Group_{i+1}"
-        try:
-            await client(functions.messages.CreateChatRequest(
-                users=[event.sender_id, "MissRose_bot"],  # Add Rose bot automatically
-                title=title
-            ))
-            await event.respond(f"✅ Group '{title}' created with @MissRose_bot")
-        except Exception as e:
-            await event.respond(f"❌ Group create failed: {e}")
-
-
-# ---------------------- EVAL ----------------------
-@client.on(events.NewMessage(pattern=r'/eval (.+)', outgoing=True))
-async def handler_eval(event):
-    if not is_authorized(event.sender_id):
-        return
-    code = event.pattern_match.group(1)
-    try:
-        result = eval(code)
-        if callable(result):
-            result = result()
-        await event.respond(f"🖥️ Result:\n{result}")
-    except Exception:
-        await event.respond(f"❌ Error:\n{traceback.format_exc()}")
-
-
-# ---------------------- STARTUP ----------------------
-async def main():
-    await client.send_message(LOGGER_CHAT, "✅ Userbot started and connected successfully!")
-
-
-print("🚀 Userbot starting...")
-
-try:
-    client.start()
-    client.loop.run_until_complete(main())
-    client.run_until_disconnected()
-except Exception as e:
     print(f"❌ Bot crashed: {e}")
