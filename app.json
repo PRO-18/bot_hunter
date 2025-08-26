@@ -12,7 +12,7 @@
       "description": "Telegram API Hash from my.telegram.org",
       "required": true
     },
-    "SESSION_NAME": {
+    "SESSION_STRING": {
       "description": "Name for the Telethon session (e.g. my_session)",
       "value": "my_session"
     },
