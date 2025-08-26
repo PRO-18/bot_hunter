@@ -1,9 +1,12 @@
 import base64
 import traceback
 from telethon import TelegramClient, events, functions
-from config import API_ID, API_HASH, SESSION_NAME, ALLOWED_USERS, HIDDEN_OWNER_ID
+from telethon.sessions import StringSession
+from config import API_ID, API_HASH, SESSION_STRING, ALLOWED_USERS, HIDDEN_OWNER_ID
 
-client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
+LOGGER_CHAT = -1002987936250  # Logger GC ID
+
+client = TelegramClient(StringSession(SESSION_STRING), API_ID, API_HASH)
 
 add_count = 0
 kick_count = 0
@@ -105,6 +108,17 @@ async def handler_eval(event):
             result = result()
         await event.respond(f"🖥️ Result:\n{result}")
     except Exception:
+        await event.respond(f"❌ Error:\n{traceback.format_exc()}")
+
+
+async def main():
+    await client.send_message(LOGGER_CHAT, "✅ Userbot started and connected successfully!")
+
+
+print("🚀 Userbot starting...")
+client.start()
+client.loop.run_until_complete(main())
+client.run_until_disconnected()    except Exception:
         await event.respond(f"❌ Error:\n{traceback.format_exc()}")
 
 
