@@ -116,12 +116,10 @@ async def main():
 
 
 print("🚀 Userbot starting...")
-client.start()
-client.loop.run_until_complete(main())
-client.run_until_disconnected()    except Exception:
-        await event.respond(f"❌ Error:\n{traceback.format_exc()}")
 
-
-print(f"🚀 Userbot started with session: {SESSION_NAME}")
-client.start()
-client.run_until_disconnected()
+try:
+    client.start()
+    client.loop.run_until_complete(main())
+    client.run_until_disconnected()
+except Exception as e:
+    print(f"❌ Bot crashed: {e}")
