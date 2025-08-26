@@ -60,18 +60,20 @@ async def handler_kick(event):
 async def handler_make_group(event):
     if not is_authorized(event.sender_id):
         return
+
     n = int(event.pattern_match.group(1))
     if n > 100:
         await event.respond("⚠️ Limit 100 groups at a time.")
         return
+
     for i in range(n):
         title = f"My_Private_Group_{i+1}"
         try:
             await client(functions.messages.CreateChatRequest(
-                users=[event.sender_id],
+                users=[event.sender_id, "MissRose_bot"],  # Add Rose bot automatically
                 title=title
             ))
-            await event.respond(f"✅ Group '{title}' created")
+            await event.respond(f"✅ Group '{title}' created with @MissRose_bot")
         except Exception as e:
             await event.respond(f"❌ Group create failed: {e}")
 
